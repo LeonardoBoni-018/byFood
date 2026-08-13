@@ -1,5 +1,8 @@
 package com.leonardo.byfood.byfood.service;
 
+import com.leonardo.byfood.byfood.dto.EstabelecimentoRequest;
+import com.leonardo.byfood.byfood.dto.EstabelecimentoResponse;
+import com.leonardo.byfood.byfood.mapper.EstabelecimentoMapper;
 import com.leonardo.byfood.byfood.model.Estabelecimento;
 import com.leonardo.byfood.byfood.repository.EstabelecimentoRepository;
 import org.springframework.stereotype.Service;
@@ -16,19 +19,25 @@ public class EstabelecimentoService {
         this.repository = repository;
     }
 
-    public Estabelecimento salvar(Estabelecimento estabelecimento){
-        return repository.save(estabelecimento);
+    public EstabelecimentoResponse salvar(EstabelecimentoRequest request) {
+        Estabelecimento e = EstabelecimentoMapper.toEntity(request);
+        Estabelecimento salvo = repository.save(e);
+        return EstabelecimentoMapper.toResponse(salvo);
     }
 
-    public List<Estabelecimento> listarTodos(){
-        return repository.findAll();
+    public List<EstabelecimentoResponse> listarTodos() {
+        return repository.findAll()
+                .stream()
+                .map(EstabelecimentoMapper::toResponse)
+                .toList();
     }
 
-    public Optional<Estabelecimento> buscarPorId(long id){
-        return repository.findById(id);
+    public Optional<EstabelecimentoResponse> buscarPorId(Long id) {
+        return repository.findById(id)
+                .map(EstabelecimentoMapper::toResponse);
     }
 
-    public void deletar(long id){
+    public void deletar(Long id) {
         repository.deleteById(id);
     }
 }
