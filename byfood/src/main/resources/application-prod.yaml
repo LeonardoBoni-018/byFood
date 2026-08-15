@@ -6,3 +6,8 @@ spring:
 
   jpa:
     show-sql: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION}
