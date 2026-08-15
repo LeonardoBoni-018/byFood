@@ -1,4 +1,4 @@
-package com.leonardo.byfood.byfood;
+package com.byfood.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
