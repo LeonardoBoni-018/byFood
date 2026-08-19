@@ -5,8 +5,8 @@ API de restaurante fixo (estilo iFood) para gerenciar cardápio e pedidos, com c
 ## Fases do projeto
 
 - **Fase 0 — Fundação** (concluída): scaffold do projeto, domínio base (Restaurant, MenuItem), migrations Flyway, perfis dev/prod, Docker, testes de integração.
-- **Fase 1 — Cardápio + Autenticação** (em andamento): usuário admin, login JWT, CRUD do cardápio e endpoints públicos.
-- **Fase 2 — Pedidos**: criação e gestão de pedidos.
+- **Fase 1 — Cardápio + Autenticação** (concluída): usuário admin, login JWT, CRUD do cardápio e endpoints públicos.
+- **Fase 2 — Pedidos** (em andamento): criação de pedidos, status workflow e gestão admin.
 - **Fase 3 — WhatsApp**: confirmação de pedidos via Evolution API.
 - **Fase 4 — Pagamentos**: a definir (Mercado Pago como candidato).
 
@@ -46,10 +46,20 @@ byfood/
 
 ## Endpoints atuais
 
-| Método | Rota                | Acesso | Descrição |
-|--------|---------------------|--------|-----------|
-| GET    | `/public/restaurant` | público | Dados do restaurante |
-| POST   | `/auth/login`        | público | Login admin, retorna JWT |
+| Método | Rota                       | Acesso  | Descrição |
+|--------|----------------------------|---------|-----------|
+| GET    | `/public/restaurant`       | público | Dados do restaurante |
+| GET    | `/public/menu`             | público | Cardápio disponível (ordenado por categoria/nome) |
+| POST   | `/public/orders`           | público | Cria pedido |
+| GET    | `/public/orders/{id}`      | público | Consulta pedido |
+| POST   | `/auth/login`              | público | Login admin, retorna JWT |
+| GET    | `/admin/menu`              | JWT     | Lista itens do cardápio |
+| GET    | `/admin/menu/{id}`         | JWT     | Detalhe do item |
+| POST   | `/admin/menu`              | JWT     | Cria item |
+| PUT    | `/admin/menu/{id}`         | JWT     | Atualiza item |
+| DELETE | `/admin/menu/{id}`         | JWT     | Remove item |
+| GET    | `/admin/orders`            | JWT     | Lista pedidos |
+| PUT    | `/admin/orders/{id}/status`| JWT     | Atualiza status do pedido |
 
 ## Variáveis de ambiente
 
@@ -103,14 +113,13 @@ Requer Docker Desktop rodando (Testcontainers).
 |--------|-------------------------------------------|
 | V1     | Tabelas `restaurant` e `menu_item` + seed |
 | V2     | Tabela `admin_user` + seed admin          |
+| V3     | Tabelas `customer_order` e `order_item`   |
 
-## Status atual da Fase 1
+## Status da Fase 2
 
-- [x] Passo 1 — AdminUser + migration V2
-- [x] Passo 2 — Dependência JWT + config
-- [x] Passo 3 — JwtService + beans de segurança
-- [x] Passo 4 — Endpoint de login
-- [ ] Passo 5 — JwtAuthenticationFilter + proteger `/admin/**`
-- [ ] Passo 6 — Cardápio público (`GET /public/menu`)
-- [ ] Passo 7 — CRUD admin (`/admin/menu`)
-- [ ] Passo 8 — Testes da Fase 1
+- [x] Modelos Order/OrderItem/OrderStatus (RECEIVED → PREPARING → READY → DELIVERED / CANCELLED)
+- [x] Migration V3
+- [x] `POST /public/orders` (cria pedido, calcula total)
+- [x] `GET /public/orders/{id}`
+- [x] `GET /admin/orders` + `PUT /admin/orders/{id}/status`
+- [x] Testes Fase 2 (10 novos)
