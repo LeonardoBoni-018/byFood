@@ -9,6 +9,15 @@ public final class MenuItemMapper {
     private MenuItemMapper() {
     }
 
+    public static void toEntity(MenuItemRequest request, MenuItem target) {
+        target.setName(request.name());
+        target.setDescription(request.description());
+        target.setPrice(request.price());
+        target.setCategory(request.category());
+        target.setImageUrl(request.imageUrl());
+        target.setAvailable(request.available());
+    }
+
     public static MenuItem toEntity(MenuItemRequest request) {
         return MenuItem.builder()
                 .name(request.name())
