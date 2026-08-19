@@ -6,8 +6,8 @@ API de restaurante fixo (estilo iFood) para gerenciar cardápio e pedidos, com c
 
 - **Fase 0 — Fundação** (concluída): scaffold do projeto, domínio base (Restaurant, MenuItem), migrations Flyway, perfis dev/prod, Docker, testes de integração.
 - **Fase 1 — Cardápio + Autenticação** (concluída): usuário admin, login JWT, CRUD do cardápio e endpoints públicos.
-- **Fase 2 — Pedidos** (em andamento): criação de pedidos, status workflow e gestão admin.
-- **Fase 3 — WhatsApp**: confirmação de pedidos via Evolution API.
+- **Fase 2 — Pedidos** (concluída): criação de pedidos, status workflow, gestão admin e link WhatsApp.
+- **Fase 3 — WhatsApp**: link `wa.me` com mensagem pré-preenchida ao finalizar pedido (sem Evolution API).
 - **Fase 4 — Pagamentos**: a definir (Mercado Pago como candidato).
 
 ## Stack
@@ -123,3 +123,10 @@ Requer Docker Desktop rodando (Testcontainers).
 - [x] `GET /public/orders/{id}`
 - [x] `GET /admin/orders` + `PUT /admin/orders/{id}/status`
 - [x] Testes Fase 2 (10 novos)
+
+## Fase 3 — WhatsApp (link wa.me)
+
+Ao criar/consultar um pedido, a resposta inclui `whatsappLink` no formato:
+`https://wa.me/<numero_restaurante>?text=<mensagem_codificada>`
+
+O cliente toca no link, o WhatsApp abre com a mensagem do pedido **pré-preenchida** no campo de texto e basta enviar — sem integração com Evolution API.

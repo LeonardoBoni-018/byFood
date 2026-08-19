@@ -14,6 +14,7 @@ public record OrderResponse(
         OrderStatus status,
         BigDecimal total,
         List<OrderItemResponse> items,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String whatsappLink
 ) {
 }

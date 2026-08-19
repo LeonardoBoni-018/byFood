@@ -46,7 +46,8 @@ class OrderControllerTest {
                                 """.formatted(itemId)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("RECEIVED"))
-                .andExpect(jsonPath("$.total").value(50.00));
+                .andExpect(jsonPath("$.total").value(50.00))
+                .andExpect(jsonPath("$.whatsappLink").value(org.hamcrest.Matchers.startsWith("https://wa.me/5511988888888?text=")));
     }
 
     @Test

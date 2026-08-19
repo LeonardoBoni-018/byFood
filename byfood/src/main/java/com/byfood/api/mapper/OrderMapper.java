@@ -10,7 +10,7 @@ public final class OrderMapper {
     private OrderMapper() {
     }
 
-    public static OrderResponse toResponse(Order order) {
+    public static OrderResponse toResponse(Order order, String whatsappLink) {
         return new OrderResponse(
                 order.getId(),
                 order.getCustomerName(),
@@ -21,7 +21,8 @@ public final class OrderMapper {
                 order.getItems().stream()
                         .map(OrderMapper::toItemResponse)
                         .toList(),
-                order.getCreatedAt()
+                order.getCreatedAt(),
+                whatsappLink
         );
     }
 

@@ -21,10 +21,19 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
+    private final RestaurantService restaurantService;
+    private final WhatsAppLinkService whatsAppLinkService;
 
-    public OrderService(OrderRepository orderRepository, MenuItemRepository menuItemRepository) {
+    public OrderService(OrderRepository orderRepository, MenuItemRepository menuItemRepository,
+                        RestaurantService restaurantService, WhatsAppLinkService whatsAppLinkService) {
         this.orderRepository = orderRepository;
         this.menuItemRepository = menuItemRepository;
+        this.restaurantService = restaurantService;
+        this.whatsAppLinkService = whatsAppLinkService;
+    }
+
+    private String whatsappLink(Order order) {
+        return whatsAppLinkService.buildOrderLink(order, restaurantService.getRestaurant().whatsappNumber());
     }
 
     @Transactional
@@ -58,20 +67,21 @@ public class OrderService {
         }
 
         order.setTotal(total);
-        return OrderMapper.toResponse(orderRepository.save(order));
+        Order saved = orderRepository.save(order);
+        return OrderMapper.toResponse(saved, whatsappLink(saved));
     }
 
     @Transactional(readOnly = true)
     public OrderResponse getOrder(Long id) {
         return orderRepository.findById(id)
-                .map(OrderMapper::toResponse)
+                .map(order -> OrderMapper.toResponse(order, whatsappLink(order)))
                 .orElseThrow(() -> new NotFoundException("Order not found"));
     }
 
     @Transactional(readOnly = true)
     public List<OrderResponse> getAllOrders() {
         return orderRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(OrderMapper::toResponse)
+                .map(order -> OrderMapper.toResponse(order, whatsappLink(order)))
                 .toList();
     }
 
@@ -80,6 +90,7 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Order not found"));
         order.setStatus(status);
-        return OrderMapper.toResponse(orderRepository.save(order));
+        Order saved = orderRepository.save(order);
+        return OrderMapper.toResponse(saved, whatsappLink(saved));
     }
 }
