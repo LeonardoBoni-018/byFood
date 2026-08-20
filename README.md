@@ -130,7 +130,10 @@ Requer Docker Desktop rodando (Testcontainers).
 Ao criar/consultar um pedido, a resposta inclui `whatsappLink` no formato:
 `https://wa.me/<numero_restaurante>?text=<mensagem_codificada>`
 
-O cliente toca no link, o WhatsApp abre com a mensagem do pedido **pré-preenchida** no campo de texto e basta enviar — sem integração com Evolution API.
+A mensagem é **pré-preenchida** com o nome do restaurante, os itens do pedido com
+**subtotal por item** e preços no formato brasileiro (ex.: `2x Burger - R$ 25,00 = R$ 50,00`),
+o total e os dados do cliente. O cliente toca no link, o WhatsApp abre com o texto pronto
+e basta enviar — sem integração com Evolution API.
 
 ## Melhorias — Opção B
 

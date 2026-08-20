@@ -2,6 +2,7 @@ package com.byfood.api.service;
 
 import com.byfood.api.dto.OrderRequest;
 import com.byfood.api.dto.OrderResponse;
+import com.byfood.api.dto.RestaurantResponse;
 import com.byfood.api.exception.NotFoundException;
 import com.byfood.api.mapper.OrderMapper;
 import com.byfood.api.model.MenuItem;
@@ -34,7 +35,8 @@ public class OrderService {
     }
 
     private String whatsappLink(Order order) {
-        return whatsAppLinkService.buildOrderLink(order, restaurantService.getRestaurant().whatsappNumber());
+        RestaurantResponse restaurant = restaurantService.getRestaurant();
+        return whatsAppLinkService.buildOrderLink(order, restaurant.name(), restaurant.whatsappNumber());
     }
 
     @Transactional
