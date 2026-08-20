@@ -4,10 +4,10 @@ import com.byfood.api.dto.OrderResponse;
 import com.byfood.api.dto.OrderStatusUpdateRequest;
 import com.byfood.api.service.OrderService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/admin/orders")
@@ -20,8 +20,8 @@ public class AdminOrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getAll() {
-        return ResponseEntity.ok(service.getAllOrders());
+    public ResponseEntity<Page<OrderResponse>> getAll(Pageable pageable) {
+        return ResponseEntity.ok(service.getAllOrders(pageable));
     }
 
     @PutMapping("/{id}/status")

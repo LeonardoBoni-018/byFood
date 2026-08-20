@@ -8,18 +8,18 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public record MenuItemRequest(
-        @NotBlank(message = "name is required")
+        @NotBlank(message = "nome é obrigatório")
         @Size(max = 150)
         String name,
 
         @Size(max = 500)
         String description,
 
-        @NotNull(message = "price is required")
-        @DecimalMin(value = "0.01", message = "price must be greater than zero")
+        @NotNull(message = "preço é obrigatório")
+        @DecimalMin(value = "0.01", message = "preço deve ser maior que zero")
         BigDecimal price,
 
-        @NotBlank(message = "category is required")
+        @NotBlank(message = "categoria é obrigatória")
         @Size(max = 80)
         String category,
 

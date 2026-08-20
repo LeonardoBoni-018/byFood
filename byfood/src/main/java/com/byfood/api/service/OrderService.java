@@ -10,11 +10,12 @@ import com.byfood.api.model.OrderItem;
 import com.byfood.api.model.OrderStatus;
 import com.byfood.api.repository.MenuItemRepository;
 import com.byfood.api.repository.OrderRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class OrderService {
@@ -49,10 +50,10 @@ public class OrderService {
         BigDecimal total = BigDecimal.ZERO;
         for (var itemRequest : request.items()) {
             MenuItem menuItem = menuItemRepository.findById(itemRequest.menuItemId())
-                    .orElseThrow(() -> new NotFoundException("Menu item not found"));
+                    .orElseThrow(() -> new NotFoundException("Item do cardápio não encontrado"));
 
             if (!menuItem.isAvailable()) {
-                throw new NotFoundException("Menu item is not available");
+                throw new NotFoundException("Item do cardápio não está disponível");
             }
 
             BigDecimal lineTotal = menuItem.getPrice().multiply(BigDecimal.valueOf(itemRequest.quantity()));
@@ -75,20 +76,19 @@ public class OrderService {
     public OrderResponse getOrder(Long id) {
         return orderRepository.findById(id)
                 .map(order -> OrderMapper.toResponse(order, whatsappLink(order)))
-                .orElseThrow(() -> new NotFoundException("Order not found"));
+                .orElseThrow(() -> new NotFoundException("Pedido não encontrado"));
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponse> getAllOrders() {
-        return orderRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(order -> OrderMapper.toResponse(order, whatsappLink(order)))
-                .toList();
+    public Page<OrderResponse> getAllOrders(Pageable pageable) {
+        return orderRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(order -> OrderMapper.toResponse(order, whatsappLink(order)));
     }
 
     @Transactional
     public OrderResponse updateOrderStatus(Long id, OrderStatus status) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Order not found"));
+                .orElseThrow(() -> new NotFoundException("Pedido não encontrado"));
         order.setStatus(status);
         Order saved = orderRepository.save(order);
         return OrderMapper.toResponse(saved, whatsappLink(saved));

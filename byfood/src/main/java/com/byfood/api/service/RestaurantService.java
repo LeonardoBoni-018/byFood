@@ -18,6 +18,6 @@ public class RestaurantService {
     public RestaurantResponse getRestaurant() {
         return repository.findFirstByOrderByIdAsc()
                 .map(RestaurantMapper::toResponse)
-                .orElseThrow(() -> new NotFoundException("Restaurant not configured"));
+                .orElseThrow(() -> new NotFoundException("Restaurante não configurado"));
     }
 }

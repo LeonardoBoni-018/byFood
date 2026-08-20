@@ -23,6 +23,6 @@ public class AdminUserDetailsService implements UserDetailsService {
                         .password(admin.getPasswordHash())
                         .roles("ADMIN")
                         .build())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
     }
 }

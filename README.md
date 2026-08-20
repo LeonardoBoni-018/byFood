@@ -8,6 +8,7 @@ API de restaurante fixo (estilo iFood) para gerenciar cardápio e pedidos, com c
 - **Fase 1 — Cardápio + Autenticação** (concluída): usuário admin, login JWT, CRUD do cardápio e endpoints públicos.
 - **Fase 2 — Pedidos** (concluída): criação de pedidos, status workflow, gestão admin e link WhatsApp.
 - **Fase 3 — WhatsApp**: link `wa.me` com mensagem pré-preenchida ao finalizar pedido (sem Evolution API).
+- **Melhorias (Opção B)**: paginação, soft-delete do cardápio, mensagens de erro em português e rate limiting no login.
 - **Fase 4 — Pagamentos**: a definir (Mercado Pago como candidato).
 
 ## Stack
@@ -49,16 +50,16 @@ byfood/
 | Método | Rota                       | Acesso  | Descrição |
 |--------|----------------------------|---------|-----------|
 | GET    | `/public/restaurant`       | público | Dados do restaurante |
-| GET    | `/public/menu`             | público | Cardápio disponível (ordenado por categoria/nome) |
+| GET    | `/public/menu`             | público | Cardápio disponível — **paginado** (`?page=&size=`), ordenado por categoria/nome |
 | POST   | `/public/orders`           | público | Cria pedido |
 | GET    | `/public/orders/{id}`      | público | Consulta pedido |
 | POST   | `/auth/login`              | público | Login admin, retorna JWT |
-| GET    | `/admin/menu`              | JWT     | Lista itens do cardápio |
+| GET    | `/admin/menu`              | JWT     | Lista itens do cardápio (todos, **paginado**) |
 | GET    | `/admin/menu/{id}`         | JWT     | Detalhe do item |
 | POST   | `/admin/menu`              | JWT     | Cria item |
 | PUT    | `/admin/menu/{id}`         | JWT     | Atualiza item |
-| DELETE | `/admin/menu/{id}`         | JWT     | Remove item |
-| GET    | `/admin/orders`            | JWT     | Lista pedidos |
+| DELETE | `/admin/menu/{id}`         | JWT     | **Soft-delete**: marca como indisponível |
+| GET    | `/admin/orders`            | JWT     | Lista pedidos — **paginado** (`?page=&size=`), mais recentes primeiro |
 | PUT    | `/admin/orders/{id}/status`| JWT     | Atualiza status do pedido |
 
 ## Variáveis de ambiente
@@ -130,3 +131,10 @@ Ao criar/consultar um pedido, a resposta inclui `whatsappLink` no formato:
 `https://wa.me/<numero_restaurante>?text=<mensagem_codificada>`
 
 O cliente toca no link, o WhatsApp abre com a mensagem do pedido **pré-preenchida** no campo de texto e basta enviar — sem integração com Evolution API.
+
+## Melhorias — Opção B
+
+- **Paginação**: `GET /public/menu`, `GET /admin/menu` e `GET /admin/orders` aceitam `?page=&size=` e retornam uma estrutura `Page` estável (Spring Data `VIA_DTO`).
+- **Soft-delete**: `DELETE /admin/menu/{id}` não remove o item — marca `available=false`; ele some do cardápio público mas permanece no histórico/relatórios.
+- **Mensagens em português**: validações, erros de negócio e `ProblemDetail` agora respondem em PT.
+- **Rate limiting no login**: `POST /auth/login` permite até **5 tentativas por IP em 1 minuto**; acima disso responde `429`.

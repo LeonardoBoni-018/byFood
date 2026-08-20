@@ -6,36 +6,33 @@ import com.byfood.api.exception.NotFoundException;
 import com.byfood.api.mapper.MenuItemMapper;
 import com.byfood.api.model.MenuItem;
 import com.byfood.api.repository.MenuItemRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Comparator;
-import java.util.List;
 
 @Service
 public class MenuItemService {
+
     private final MenuItemRepository menuItemRepository;
 
-    public MenuItemService(MenuItemRepository repository){
+    public MenuItemService(MenuItemRepository repository) {
         this.menuItemRepository = repository;
     }
 
-    public List<MenuItemResponse> getAvailableMenu(){
-        return menuItemRepository.findByAvailableTrueOrderByCategoryAscNameAsc().stream().map(MenuItemMapper::toResponse)
-                .toList();
+    public Page<MenuItemResponse> getAvailableMenu(Pageable pageable) {
+        return menuItemRepository.findByAvailableTrueOrderByCategoryAscNameAsc(pageable)
+                .map(MenuItemMapper::toResponse);
     }
 
-    public List<MenuItemResponse> getAllMenu() {
-        return menuItemRepository.findAll().stream()
-                .sorted(Comparator.comparing(MenuItem::getCategory)
-                        .thenComparing(MenuItem::getName))
-                .map(MenuItemMapper::toResponse)
-                .toList();
+    public Page<MenuItemResponse> getAllMenu(Pageable pageable) {
+        return menuItemRepository.findAllByOrderByCategoryAscNameAsc(pageable)
+                .map(MenuItemMapper::toResponse);
     }
 
     public MenuItemResponse getMenuItem(Long id) {
         return menuItemRepository.findById(id)
                 .map(MenuItemMapper::toResponse)
-                .orElseThrow(() -> new NotFoundException("Menu item not found"));
+                .orElseThrow(() -> new NotFoundException("Item do cardápio não encontrado"));
     }
 
     public MenuItemResponse createMenuItem(MenuItemRequest request) {
@@ -45,15 +42,15 @@ public class MenuItemService {
 
     public MenuItemResponse updateMenuItem(Long id, MenuItemRequest request) {
         MenuItem existing = menuItemRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Menu item not found"));
+                .orElseThrow(() -> new NotFoundException("Item do cardápio não encontrado"));
         MenuItemMapper.toEntity(request, existing);
         return MenuItemMapper.toResponse(menuItemRepository.save(existing));
     }
 
     public void deleteMenuItem(Long id) {
-        if (!menuItemRepository.existsById(id)) {
-            throw new NotFoundException("Menu item not found");
-        }
-        menuItemRepository.deleteById(id);
+        MenuItem existing = menuItemRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Item do cardápio não encontrado"));
+        existing.setAvailable(false);
+        menuItemRepository.save(existing);
     }
 }

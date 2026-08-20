@@ -8,19 +8,19 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record OrderRequest(
-        @NotBlank(message = "customerName is required")
+        @NotBlank(message = "nome do cliente é obrigatório")
         @Size(max = 120)
         String customerName,
 
-        @NotBlank(message = "customerPhone is required")
+        @NotBlank(message = "telefone do cliente é obrigatório")
         @Size(max = 30)
         String customerPhone,
 
-        @NotBlank(message = "customerAddress is required")
+        @NotBlank(message = "endereço do cliente é obrigatório")
         @Size(max = 255)
         String customerAddress,
 
-        @NotEmpty(message = "items must not be empty")
+        @NotEmpty(message = "os itens não podem estar vazios")
         List<@Valid OrderItemRequest> items
 ) {
 }

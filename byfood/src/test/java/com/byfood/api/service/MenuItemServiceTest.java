@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 
@@ -62,13 +63,15 @@ class MenuItemServiceTest {
     }
 
     @Test
-    void shouldDeleteMenuItem() {
+    void shouldSoftDeleteMenuItem() {
         MenuItemResponse created = service.createMenuItem(sampleRequest());
 
         service.deleteMenuItem(created.id());
 
-        assertThatThrownBy(() -> service.getMenuItem(created.id()))
-                .isInstanceOf(NotFoundException.class);
+        MenuItemResponse found = service.getMenuItem(created.id());
+        assertThat(found.available()).isFalse();
+        assertThat(service.getAvailableMenu(Pageable.unpaged()))
+                .noneMatch(item -> item.id().equals(created.id()));
     }
 
     @Test
